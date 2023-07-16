@@ -1,0 +1,43 @@
+
+.card {
+    width: 18rem;
+    background-color: transparent;
+    border: none;
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .card .cbody {
+    padding: 10px;
+    text-align: center;
+    background-color: transparent;
+  }
+  
+  .card .text {
+    color: #090909;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .card .text p {
+    margin: 0;
+  }
+  
+  .card .btn {
+    background-color: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .card .btn:hover {
+    background-color: #fff;
+    color: #000;
+  }
+  
