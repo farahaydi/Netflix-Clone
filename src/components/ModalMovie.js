@@ -27,10 +27,13 @@ function ModalMovie({ handleShow, handleClose, show, modalData }) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+        <Button>
+            Add To Favorite
+          </Button>
+          <Button  onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button  onClick={handleClose}>
             Save Changes
           </Button>
         </Modal.Footer>
