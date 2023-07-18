@@ -5,6 +5,10 @@ import Form from "react-bootstrap/Form";
 import './ModalMovie.css'
 
 function ModalMovie({ handleShow, handleClose, show, modalData }) {
+  function handleSubmit(e)
+  {
+    e.preventDefault();
+  }
   return (
     <>
       <Modal show={show} onHide={handleClose} animation={false}>
@@ -19,11 +23,12 @@ function ModalMovie({ handleShow, handleClose, show, modalData }) {
           />
           <p>{modalData.overview}</p>
 
-          <Form>
+          <Form onSubmit={(e) => handleSubmit(e)}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>ADD YOUR COMMENT</Form.Label>
               <Form.Control as="textarea" rows={3} />
             </Form.Group>
+            <Button type="submit">submit</Button>
           </Form>
         </Modal.Body>
         <Modal.Footer>
