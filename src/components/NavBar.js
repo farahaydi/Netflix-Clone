@@ -8,10 +8,10 @@ function NavBar ()
         <>
           <Navbar bg="dark" data-bs-theme="dark">
             <Container>
-              <Navbar.Brand href="#home"><h1 className='title'>NETFLIX</h1></Navbar.Brand>
+              <Navbar.Brand href="/"><h1 className='title'>NETFLIX</h1></Navbar.Brand>
               <Nav className="me-auto">
-                <Nav.Link href="#home" className='para'><p>Home</p></Nav.Link>
-                <Nav.Link href="#features" className='para'><p>Favorite</p></Nav.Link>
+                <Nav.Link href="/" className='para'><p>Home</p></Nav.Link>
+                <Nav.Link href="/FavList" className='para'><p>Favorite</p></Nav.Link>
               </Nav>
             </Container>
           </Navbar>
