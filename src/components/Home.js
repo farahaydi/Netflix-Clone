@@ -28,7 +28,7 @@ function Home() {
 
   return (
     <div>
-      <Head />
+      {/* <Head /> */}
       <MovieList commentHandler={commentHandler} data={data} />
     </div>
   );
