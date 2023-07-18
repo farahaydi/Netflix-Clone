@@ -1,14 +1,59 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import './ModalMovie.css'
+import "./ModalMovie.css";
 
-function ModalMovie({ handleShow, handleClose, show, modalData }) {
-  function handleSubmit(e)
-  {
+function ModalMovie({
+  handleShow,
+  handleClose,
+  show,
+  modalData,
+  commentHandler,
+}) {
+  const [comment, setComment] = useState("");
+  const commentRef = useRef();
+
+  function handleSubmit(e) {
     e.preventDefault();
+    const userComment = commentRef.current.value;
+    console.log(userComment);
+    const newMovie = { ...modalData, userComment }; // copy everything in modalData and add userComment to it
+    setComment(userComment);
+    commentHandler(newMovie, modalData.id);
+    console.log("new object contain comment", newMovie);
   }
+
+  const handleAddFav = async () => {
+    try {
+      const maxOverviewLength = 199;
+      const truncatedOverview = modalData.overview.slice(0, maxOverviewLength);
+
+      const data = {
+        t: modalData.title,
+        a: modalData.poster_path,
+        o: truncatedOverview,
+        c: modalData.comment,
+      };
+      const url = process.env.REACT_APP_SERVER_URL;
+      const response = await fetch(`${url}/addMovie`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.status === 200 || 201) {
+        console.log("Movie added to fav", data);
+      } else {
+        console.log("Failed");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
   return (
     <>
       <Modal show={show} onHide={handleClose} animation={false}>
@@ -26,21 +71,16 @@ function ModalMovie({ handleShow, handleClose, show, modalData }) {
           <Form onSubmit={(e) => handleSubmit(e)}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>ADD YOUR COMMENT</Form.Label>
-              <Form.Control as="textarea" rows={3} />
+              <Form.Control ref={commentRef} as="textarea" rows={3} />
             </Form.Group>
             <Button type="submit">submit</Button>
+            <Button onClick={handleAddFav}>Add To Favorite</Button>
           </Form>
+          {modalData.comment ? modalData.comment : "No Comment Added"}
         </Modal.Body>
         <Modal.Footer>
-        <Button>
-            Add To Favorite
-          </Button>
-          <Button  onClick={handleClose}>
-            Close
-          </Button>
-          <Button  onClick={handleClose}>
-            Save Changes
-          </Button>
+          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={handleClose}>Save Changes</Button>
         </Modal.Footer>
       </Modal>
     </>
