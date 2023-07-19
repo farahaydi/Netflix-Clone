@@ -1,19 +1,33 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
-import "./Movie.css";
+import "./FavList.css";
 
-function FavList({ comm }) {
+function FavList() {
   const [show, setShow] = useState(false);
   const [modalData, setModalData] = useState({});
   const [favmovie, setFavMovie] = useState([]);
-  const commentRef = useRef("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const commentRef = useRef();
 
   async function fetchFavMovies() {
-    const url = process.env.REACT_APP_SERVER_URL;
-    const response = await fetch(`${url}/getMovies`);
-    const receivedData = await response.json();
-    setFavMovie(receivedData);
+    try {
+      const url = process.env.REACT_APP_SERVER_URL;
+      const response = await fetch(`${url}/getMovies`);
+      const receivedData = await response.json();
+      setFavMovie(receivedData);
+      setLoading(false);
+    } catch (error) {
+     
+      setError(error.message);
+      setLoading(false);
+    }
   }
+
+  useEffect(() => {
+    fetchFavMovies();
+  }, []);
 
   async function handleDelete(id) {
     const url = `${process.env.REACT_APP_SERVER_URL}/delete/${id}`;
@@ -31,10 +45,16 @@ function FavList({ comm }) {
     }
   }
 
-  const handelUpdate = async (id) => {
+  async function handleUpdate(id) {
+    const userComment = commentRef.current.value;
+    const maxOverviewLength = 199;
     const data = {
-      newComment: comm.comment,
+      t: modalData.title,
+      a: modalData.poster_path,
+      o: modalData.overview.slice(0, maxOverviewLength),
+      comment: userComment,
     };
+
     const url = `${process.env.REACT_APP_SERVER_URL}/update/${id}`;
     const response = await fetch(url, {
       method: "PUT",
@@ -43,66 +63,87 @@ function FavList({ comm }) {
       },
       body: JSON.stringify(data),
     });
+
     if (response.ok) {
       console.log("Movie Updated", data);
+      fetchFavMovies();
+      handleClose();
     } else {
       console.log("Failed");
     }
+  }
+
+  const handleClose = () => {
+    setModalData({});
+    setShow(false);
   };
 
-  useEffect(() => {
-    fetchFavMovies();
-  }, []);
-
-  const handleClose = () => setShow(false);
   const handleShow = (movie) => {
-    setShow(true);
-    setModalData(movie);
+    if (movie) {
+      setShow(true);
+      setModalData(movie);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const userComment = commentRef.current.value;
-    console.log(userComment);
+    handleUpdate(modalData.id);
   };
+  if (loading) {
+    return <div className="loading-container">
+    <b>LOADING...</b>
+    </div>
+  }
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
   return (
-    <div>
+    <div className="movie-container">
       {favmovie.map((movie) => (
-        <Card key={movie.id} style={{ width: "18rem" }} className="card">
+        <Card key={movie.id} className="movie-card">
           <Card.Img
             variant="top"
             src={`https://image.tmdb.org/t/p/original${movie.actor}`}
+            className="movie-image"
           />
           <Card.Body className="cbody">
             <Card.Title>
-              <p className="text">{movie.title}</p>
+              <p className="movie-title">{movie.title}</p>
             </Card.Title>
-            <Card.Text className="text"> {movie.comment}</Card.Text>
-            <Button
-              onClick={() => handleDelete(movie.id)}
-              className="btn"
-              style={{
-                backgroundColor: "red",
-                border: "2px solid red",
-                textTransform: "uppercase",
-                fontWeight: "bold",
-              }}
-            >
-              Delete
-            </Button>
-            <Button
-              onClick={() => handleShow(movie)}
-              className="btn"
-              style={{
-                backgroundColor: "red",
-                border: "2px solid red",
-                textTransform: "uppercase",
-                fontWeight: "bold",
-              }}
-            >
-              Update
-            </Button>
+            <Card.Text className="movie-comment">{movie.comment}</Card.Text>
+            <div className="movie-buttons">
+              <Button
+                onClick={() => handleDelete(movie.id)}
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "10px 20px",
+                  border: "none",
+                  borderRadius: "5px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                onClick={() => handleShow(movie)}
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "10px 20px",
+                  border: "none",
+                  borderRadius: "5px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Update
+              </Button>
+            </div>
           </Card.Body>
         </Card>
       ))}
@@ -112,19 +153,16 @@ function FavList({ comm }) {
           <Modal.Title>{modalData.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Update Your Comment</Form.Label>
               <Form.Control ref={commentRef} as="textarea" rows={3} />
             </Form.Group>
-            <Button type="submit"  onClick={() => handelUpdate(modalData.id)}>submit</Button>
-           
+            <Button type="submit">Submit</Button>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleClose}>Close</Button>
-          <Button onClick={handleClose}>Save Changes</Button>
         </Modal.Footer>
       </Modal>
     </div>

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import "./Movie.css";
 import ModalMovie from "./ModalMovie";
 import { Card, Button } from "react-bootstrap";
-import MovieList from "./MovieList";
-//import ModalCard from "./ModalCard";
 function Movie(props) {
   const [show, setShow] = useState(false);
 
