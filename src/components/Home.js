@@ -56,7 +56,6 @@ function Home() {
 
   return (
     <div>
-
       <MovieList commentHandler={commentHandler} data={data} />
     </div>
   );
