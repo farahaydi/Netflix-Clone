@@ -56,10 +56,6 @@ function Home() {
 
   return (
     <div>
-<<<<<<< HEAD
-=======
-      <Head />
->>>>>>> parent of eccecb9 (test)
       <MovieList commentHandler={commentHandler} data={data} />
     </div>
   );
